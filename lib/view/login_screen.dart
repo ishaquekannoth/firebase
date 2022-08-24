@@ -1,5 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:fire_base_first/view/logged_in_page.dart';
+import 'package:fire_base_first/view/sign_up_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -25,36 +26,40 @@ class LogInScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Column(
-                      children: [
-                        TextFormField(
-                          validator: (value) => EmailValidator.validate(value!)
-                              ? null
-                              : "Please enter a valid email",
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15)),
-                              hintText: 'User Name'),
-                          controller: _userName,
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        TextFormField(
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Invalid password";
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15)),
-                              hintText: 'Password'),
-                          obscureText: true,
-                          controller: _password,
-                        ),
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            validator: (value) =>
+                                EmailValidator.validate(value!)
+                                    ? null
+                                    : "Please enter a valid email",
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15)),
+                                hintText: 'User Name'),
+                            controller: _userName,
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Invalid password";
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15)),
+                                hintText: 'Password'),
+                            obscureText: true,
+                            controller: _password,
+                          ),
+                        ],
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.only(right: 35),
@@ -64,7 +69,20 @@ class LogInScreen extends StatelessWidget {
                           ElevatedButton(
                               onPressed: () async {
                                 if (formKey.currentState!.validate()) {
-                                  await signIn(context)
+                                  await signIn(context).then((value) =>ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  behavior:
+                                                      SnackBarBehavior.floating,
+                                                  margin:
+                                                      const EdgeInsets.all(20),
+                                                  duration: const Duration(
+                                                      seconds: 2),
+                                                  elevation: 25,
+                                                  backgroundColor: const Color.fromARGB(255, 255, 2, 2),
+                                                  content: Text(
+                                                    textAlign: TextAlign.center,
+                                                    value.toString(),
+                                                  ))))
                                       .then((value) => Navigator.of(context)
                                           .pushAndRemoveUntil(
                                               MaterialPageRoute(
@@ -73,17 +91,18 @@ class LogInScreen extends StatelessWidget {
                                               (route) => false))
                                       .onError((error, stackTrace) =>
                                           ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
+                                              .showSnackBar(SnackBar(
                                                   behavior:
                                                       SnackBarBehavior.floating,
-                                                  margin: EdgeInsets.all(20),
-                                                  duration:
-                                                      Duration(seconds: 2),
+                                                  margin:
+                                                      const EdgeInsets.all(20),
+                                                  duration: const Duration(
+                                                      seconds: 2),
                                                   elevation: 25,
-                                                  backgroundColor: Colors.red,
+                                                  backgroundColor: const Color.fromARGB(255, 255, 2, 2),
                                                   content: Text(
                                                     textAlign: TextAlign.center,
-                                                    "Invalid User ID or Password",
+                                                    error.toString(),
                                                   ))));
                                 }
                               },
@@ -97,9 +116,9 @@ class LogInScreen extends StatelessWidget {
                     const Text('Dont have an account ?'),
                     TextButton(
                         onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            return;
-                          }
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => SignUp()),
+                              (route) => false);
                         },
                         child: const Text("Sign Up")),
                   ],
@@ -110,8 +129,13 @@ class LogInScreen extends StatelessWidget {
     );
   }
 
-  Future signIn(context) async {  
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _userName.text.trim(), password: _password.text.trim());
+  Future<String> signIn(context) async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _userName.text.trim(), password: _password.text.trim());
+      return Future.value('SuccessFully logged in') ;
+    } on FirebaseAuthException catch (e) {
+      return Future.error( e.message!);
+    }
   }
 }

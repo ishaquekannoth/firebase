@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => HomePageProvider())
+        ChangeNotifierProvider(create: (context) => AuthProvider())
       ],
       child: MaterialApp(
         title: 'Firebase',

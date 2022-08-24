@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-class HomePageProvider extends ChangeNotifier{
+class AuthProvider extends ChangeNotifier{
+  
   
 }
