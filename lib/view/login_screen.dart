@@ -1,8 +1,9 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:fire_base_first/view/logged_in_page.dart';
+import 'package:fire_base_first/controller/home_page_provider.dart';
 import 'package:fire_base_first/view/sign_up_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LogInScreen extends StatelessWidget {
   LogInScreen({Key? key}) : super(key: key);
@@ -69,41 +70,9 @@ class LogInScreen extends StatelessWidget {
                           ElevatedButton(
                               onPressed: () async {
                                 if (formKey.currentState!.validate()) {
-                                  await signIn(context).then((value) =>ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  behavior:
-                                                      SnackBarBehavior.floating,
-                                                  margin:
-                                                      const EdgeInsets.all(20),
-                                                  duration: const Duration(
-                                                      seconds: 2),
-                                                  elevation: 25,
-                                                  backgroundColor: const Color.fromARGB(255, 255, 2, 2),
-                                                  content: Text(
-                                                    textAlign: TextAlign.center,
-                                                    value.toString(),
-                                                  ))))
-                                      .then((value) => Navigator.of(context)
-                                          .pushAndRemoveUntil(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      LoggedIn()),
-                                              (route) => false))
-                                      .onError((error, stackTrace) =>
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  behavior:
-                                                      SnackBarBehavior.floating,
-                                                  margin:
-                                                      const EdgeInsets.all(20),
-                                                  duration: const Duration(
-                                                      seconds: 2),
-                                                  elevation: 25,
-                                                  backgroundColor: const Color.fromARGB(255, 255, 2, 2),
-                                                  content: Text(
-                                                    textAlign: TextAlign.center,
-                                                    error.toString(),
-                                                  ))));
+                                  await Provider.of<AuthProvider>(context,listen: false)
+                                      .signIn(_userName.text.toString(),
+                                          _password.text.toString(), context);
                                 }
                               },
                               child: const Text("Login")),
@@ -133,9 +102,9 @@ class LogInScreen extends StatelessWidget {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _userName.text.trim(), password: _password.text.trim());
-      return Future.value('SuccessFully logged in') ;
+      return Future.value('SuccessFully logged in');
     } on FirebaseAuthException catch (e) {
-      return Future.error( e.message!);
+      return Future.error(e.message!);
     }
   }
 }

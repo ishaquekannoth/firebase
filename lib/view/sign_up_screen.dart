@@ -1,7 +1,9 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:fire_base_first/controller/home_page_provider.dart';
 import 'package:fire_base_first/view/start_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SignUp extends StatelessWidget {
   SignUp({Key? key}) : super(key: key);
@@ -58,43 +60,10 @@ class SignUp extends StatelessWidget {
                         ),
                         ElevatedButton(
                             onPressed: () async {
-                              if (formKey.currentState!.validate()) {
-                                await signUp().then((value) =>ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  behavior:
-                                                      SnackBarBehavior.floating,
-                                                  margin:
-                                                      const EdgeInsets.all(20),
-                                                  duration: const Duration(
-                                                      seconds: 2),
-                                                  elevation: 25,
-                                                  backgroundColor: Colors.red,
-                                                  content: Text(
-                                                    textAlign: TextAlign.center,
-                                                    value.toString(),
-                                                  ))))
-                                    .then((value) => Navigator.of(context)
-                                        .pushAndRemoveUntil(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const StartPage()),
-                                            (route) => false))
-                                    .onError((error, stackTrace) =>
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                                margin:
-                                                    const EdgeInsets.all(20),
-                                                duration:
-                                                    const Duration(seconds: 2),
-                                                elevation: 25,
-                                                backgroundColor: const Color.fromARGB(255, 255, 2, 2),
-                                                content: Text(
-                                                  textAlign: TextAlign.center,
-                                                  error.toString(),
-                                                ))));
-                              }
+                              await Provider.of<AuthProvider>(context,listen: false).signUp(
+                                  _userName.text.toString(),
+                                  _password.text.toString(),
+                                  context);
                             },
                             child: const Text("Sign Up"))
                       ],
@@ -105,15 +74,5 @@ class SignUp extends StatelessWidget {
             ),
           ),
         )));
-  }
-
-  Future<String> signUp() async {
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _userName.text.trim(), password: _password.text.trim());
-      return Future.value('Registered Successfully');
-    } on FirebaseAuthException catch (e) {
-      return Future.error(e.message!);
-    }
   }
 }
