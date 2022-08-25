@@ -145,9 +145,10 @@ class SignUp extends StatelessWidget {
                         ElevatedButton(
                             onPressed: () async {
                               final userdata = UserModel(
+                                  email: _userName.text.toString(),
                                   name: _name.text.toString(),
                                   lastName: _lastname.text.toString(),
-                                  profession: _profession.text.toString());
+                                  profession: _profession.text.toString(),image: context.read<AuthProvider>().signUpImage);
                               await context.read<AuthProvider>().signUp(
                                   _userName.text.toString(),
                                   _password.text.toString(),

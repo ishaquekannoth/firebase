@@ -12,8 +12,6 @@ import 'package:image_picker/image_picker.dart';
 class AuthProvider extends ChangeNotifier {
   String signUpImage = selectedImage;
 
-  final CollectionReference collectionReference =
-      FirebaseFirestore.instance.collection("userData");
   Future<void> signIn(
       String userName, String passWord, BuildContext context) async {
     try {
@@ -52,22 +50,25 @@ class AuthProvider extends ChangeNotifier {
     try {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: userName, password: passWord)
-          .then((value) =>
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  behavior: SnackBarBehavior.floating,
-                  margin: EdgeInsets.all(20),
-                  duration: Duration(seconds: 2),
-                  elevation: 25,
-                  backgroundColor: Color.fromARGB(255, 255, 2, 2),
-                  content: Text(
-                    textAlign: TextAlign.center,
-                    'Successfully Registered',
-                  ))))
-          .then((value) => Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => LoggedIn()),
-              (route) => false))
-          .then((value) async =>
-              await collectionReference.add({"name": userName}));
+          .then((value) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.all(20),
+            duration: Duration(seconds: 2),
+            elevation: 25,
+            backgroundColor: Color.fromARGB(255, 255, 2, 2),
+            content: Text(
+              textAlign: TextAlign.center,
+              'Successfully Registered',
+            )));
+      }).then((value) {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => LoggedIn()),
+            (route) => false);
+             FirebaseFirestore.instance
+                .collection('users')
+                .add(data.toMapped());
+      });
       resetImage();
     } on FirebaseAuthException catch (exception) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -89,7 +90,6 @@ class AuthProvider extends ChangeNotifier {
     signUpImage = base64Encode(bytes);
     notifyListeners();
   }
-
   resetImage() async {
     signUpImage = selectedImage;
     notifyListeners();
