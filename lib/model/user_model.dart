@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 class UserModel {
   String name;
@@ -18,13 +17,15 @@ class UserModel {
     return UserModel(
         name: map['name'],
         lastName: map['lastName'],
-        profession: map['profession']);
+        profession: map['profession'],
+        image: map['image']);
   }
   Map<String,dynamic>toMap(){
     return{
       name:name,
       lastName:lastName,
-      profession:profession
+      profession:profession,
+      image!: image
     };
   }
 }

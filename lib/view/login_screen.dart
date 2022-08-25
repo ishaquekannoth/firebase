@@ -70,9 +70,9 @@ class LogInScreen extends StatelessWidget {
                           ElevatedButton(
                               onPressed: () async {
                                 if (formKey.currentState!.validate()) {
-                                  await Provider.of<AuthProvider>(context,listen: false)
+                                  await context.read<AuthProvider>()
                                       .signIn(_userName.text.toString(),
-                                          _password.text.toString(), context);
+                                      _password.text.toString(), context);
                                 }
                               },
                               child: const Text("Login")),
@@ -85,9 +85,9 @@ class LogInScreen extends StatelessWidget {
                     const Text('Dont have an account ?'),
                     TextButton(
                         onPressed: () {
-                          Navigator.of(context).pushAndRemoveUntil(
+                          Navigator.of(context).push(
                               MaterialPageRoute(builder: (context) => SignUp()),
-                              (route) => false);
+                            );
                         },
                         child: const Text("Sign Up")),
                   ],
@@ -98,13 +98,4 @@ class LogInScreen extends StatelessWidget {
     );
   }
 
-  Future<String> signIn(context) async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _userName.text.trim(), password: _password.text.trim());
-      return Future.value('SuccessFully logged in');
-    } on FirebaseAuthException catch (e) {
-      return Future.error(e.message!);
-    }
-  }
 }

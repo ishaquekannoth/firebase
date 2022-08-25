@@ -1,25 +1,35 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fire_base_first/core/image.dart';
+import 'package:fire_base_first/model/user_model.dart';
 import 'package:fire_base_first/view/logged_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AuthProvider extends ChangeNotifier {
+  String signUpImage = selectedImage;
 
-  
+  final CollectionReference collectionReference =
+      FirebaseFirestore.instance.collection("userData");
   Future<void> signIn(
       String userName, String passWord, BuildContext context) async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: userName, password: passWord)
-          .then((value) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              behavior: SnackBarBehavior.floating,
-              margin: const EdgeInsets.all(20),
-              duration: const Duration(seconds: 2),
-              elevation: 25,
-              backgroundColor: const Color.fromARGB(255, 255, 2, 2),
-              content: Text(
-                textAlign: TextAlign.center,
-                value.toString(),
-              ))))
+          .then((value) =>
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  behavior: SnackBarBehavior.floating,
+                  margin: EdgeInsets.all(20),
+                  duration: Duration(seconds: 2),
+                  elevation: 25,
+                  backgroundColor: Color.fromARGB(255, 255, 2, 2),
+                  content: Text(
+                    textAlign: TextAlign.center,
+                    'Logged In successfully',
+                  ))))
           .then((value) => Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => LoggedIn()),
               (route) => false));
@@ -37,8 +47,8 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> signUp(
-      String userName, String passWord, BuildContext context) async {
+  Future<void> signUp(String userName, String passWord, BuildContext context,
+      UserModel data) async {
     try {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: userName, password: passWord)
@@ -55,7 +65,10 @@ class AuthProvider extends ChangeNotifier {
                   ))))
           .then((value) => Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => LoggedIn()),
-              (route) => false));
+              (route) => false))
+          .then((value) async =>
+              await collectionReference.add({"name": userName}));
+      resetImage();
     } on FirebaseAuthException catch (exception) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           behavior: SnackBarBehavior.floating,
@@ -68,5 +81,17 @@ class AuthProvider extends ChangeNotifier {
             exception.message.toString(),
           )));
     }
+  }
+
+  Future<void> pickimage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final bytes = File(image!.path).readAsBytesSync();
+    signUpImage = base64Encode(bytes);
+    notifyListeners();
+  }
+
+  resetImage() async {
+    signUpImage = selectedImage;
+    notifyListeners();
   }
 }
