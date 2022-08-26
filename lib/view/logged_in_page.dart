@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fire_base_first/controller/logged_in_provider.dart';
 import 'package:fire_base_first/model/user_model.dart';
 import 'package:fire_base_first/view/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoggedIn extends StatelessWidget {
   LoggedIn({Key? key}) : super(key: key);
@@ -13,14 +15,15 @@ class LoggedIn extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: (Scaffold(
-          body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(user!.email)
-            .snapshots(),
+          body: StreamBuilder<UserModel>(
+        // stream: FirebaseFirestore.instance
+        //     .collection('users')
+        //     .doc(user!.email)
+        //     .snapshots(),
+        stream: Provider.of<LoggedInProv>(context).userDataStream(user!),
         //  Provider.of<LoggedInProv>(context, listen: false)
         //     .getUserDetails(user!.email.toString()),
-        builder: (context, AsyncSnapshot snapshot) {
+        builder: (context, AsyncSnapshot<UserModel> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
@@ -35,7 +38,7 @@ class LoggedIn extends StatelessWidget {
                   CircleAvatar(
                       radius: 35,
                       backgroundImage: MemoryImage(const Base64Decoder()
-                          .convert(UserModel.fromMap(snapshot.data).image!))),
+                          .convert(snapshot.data!.image!))),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
@@ -46,7 +49,7 @@ class LoggedIn extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 10),
                               child: Text(
-                                "First Name : ${UserModel.fromMap(snapshot.data).name}",
+                                "First Name : ${snapshot.data!.name}",
                                 style: const TextStyle(fontSize: 20),textAlign: TextAlign.center,
                               ),
                             ))),
@@ -61,7 +64,7 @@ class LoggedIn extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 10),
                               child: Text(
-                                "Last name : ${UserModel.fromMap(snapshot.data).lastName}",
+                                "Last name : ${snapshot.data!.lastName}",
                                 style: const TextStyle(fontSize: 20),textAlign: TextAlign.center,
                               ),
                             ))),
@@ -76,7 +79,7 @@ class LoggedIn extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 10),
                               child: Text(
-                                "Profession : ${UserModel.fromMap(snapshot.data).profession}",
+                                "Profession : ${snapshot.data!.profession}",
                                 style: const TextStyle(fontSize: 20),textAlign: TextAlign.center,
                               ),
                             ))),

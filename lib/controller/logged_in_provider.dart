@@ -4,10 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class LoggedInProv extends ChangeNotifier {
-  Stream userDataStream(User user) async* {
-    var document =
-        FirebaseFirestore.instance.collection('users').doc(user.email).snapshots();
-    yield document;
+  Stream<UserModel> userDataStream(User user) async* {
+    var document = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.email)
+        .snapshots()
+        .map((data) => UserModel.fromMap(data));
+    yield* document;
   }
 
   // getUser() {
