@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:email_validator/email_validator.dart';
-import 'package:fire_base_first/controller/home_page_provider.dart';
+import 'package:fire_base_first/controller/sign_up_sign_in.dart';
 import 'package:fire_base_first/model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

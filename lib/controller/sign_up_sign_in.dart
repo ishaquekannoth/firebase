@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fire_base_first/controller/logged_in_provider.dart';
 import 'package:fire_base_first/core/image.dart';
 import 'package:fire_base_first/model/user_model.dart';
 import 'package:fire_base_first/view/logged_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class AuthProvider extends ChangeNotifier {
   String signUpImage = selectedImage;
@@ -27,7 +29,7 @@ class AuthProvider extends ChangeNotifier {
                   content: Text(
                     textAlign: TextAlign.center,
                     'Logged In successfully',
-                  ))))
+                  )))).then((value) => context.read<LoggedInProv>().getUserDetails(userName))
           .then((value) => Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => LoggedIn()),
               (route) => false));
@@ -43,6 +45,7 @@ class AuthProvider extends ChangeNotifier {
             exception.message.toString(),
           )));
     }
+    
   }
 
   Future<void> signUp(String userName, String passWord, BuildContext context,
@@ -65,9 +68,10 @@ class AuthProvider extends ChangeNotifier {
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => LoggedIn()),
             (route) => false);
-             FirebaseFirestore.instance
-                .collection('users')
-                .add(data.toMapped());
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.email)
+            .set(data.toMapped());
       });
       resetImage();
     } on FirebaseAuthException catch (exception) {
@@ -90,6 +94,7 @@ class AuthProvider extends ChangeNotifier {
     signUpImage = base64Encode(bytes);
     notifyListeners();
   }
+
   resetImage() async {
     signUpImage = selectedImage;
     notifyListeners();

@@ -1,4 +1,5 @@
-import 'package:fire_base_first/controller/home_page_provider.dart';
+import 'package:fire_base_first/controller/logged_in_provider.dart';
+import 'package:fire_base_first/controller/sign_up_sign_in.dart';
 import 'package:fire_base_first/view/start_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AuthProvider())
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+         ChangeNotifierProvider(create: (context) => LoggedInProv())
       ],
       child: MaterialApp(
         title: 'Firebase',
