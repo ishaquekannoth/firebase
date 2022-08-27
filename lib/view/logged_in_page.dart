@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fire_base_first/controller/logged_in_provider.dart';
 import 'package:fire_base_first/model/user_model.dart';
 import 'package:fire_base_first/view/login_screen.dart';
+import 'package:fire_base_first/view/update_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,62 +44,70 @@ class LoggedIn extends StatelessWidget {
                     child: Container(
                         height: 50,
                         width: double.infinity,
-                        decoration: BoxDecoration(borderRadius:BorderRadius.circular(35)),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(35)),
                         child: Card(
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                "First Name : ${snapshot.data!.name}",
-                                style: const TextStyle(fontSize: 20),textAlign: TextAlign.center,
-                              ),
-                            ))),
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            "First Name : ${snapshot.data!.name}",
+                            style: const TextStyle(fontSize: 20),
+                            textAlign: TextAlign.center,
+                          ),
+                        ))),
                   ),
-                   Padding(
+                  Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                         height: 50,
                         width: double.infinity,
-                        decoration: BoxDecoration(borderRadius:BorderRadius.circular(35)),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(35)),
                         child: Card(
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                "Last name : ${snapshot.data!.lastName}",
-                                style: const TextStyle(fontSize: 20),textAlign: TextAlign.center,
-                              ),
-                            ))),
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            "Last name : ${snapshot.data!.lastName}",
+                            style: const TextStyle(fontSize: 20),
+                            textAlign: TextAlign.center,
+                          ),
+                        ))),
                   ),
-                   Padding(
+                  Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                         height: 50,
                         width: double.infinity,
-                        decoration: BoxDecoration(borderRadius:BorderRadius.circular(35)),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(35)),
                         child: Card(
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                "Profession : ${snapshot.data!.profession}",
-                                style: const TextStyle(fontSize: 20),textAlign: TextAlign.center,
-                              ),
-                            ))),
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            "Profession : ${snapshot.data!.profession}",
+                            style: const TextStyle(fontSize: 20),
+                            textAlign: TextAlign.center,
+                          ),
+                        ))),
                   ),
-                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ElevatedButton(
                           onPressed: () async {
-                            await FirebaseAuth.instance.signOut().then((value) =>
-                                Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                        builder: (context) => LogInScreen()),
-                                    (route) => false));
+                            await FirebaseAuth.instance.signOut().then(
+                                (value) => Navigator.of(context)
+                                    .pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                LogInScreen()),
+                                        (route) => false));
                           },
                           child: const Text("Log Out")),
-                          ElevatedButton(
+                      ElevatedButton(
                           onPressed: () async {
-                           
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => UpdateScreen()));
                           },
                           child: const Text("Update")),
                     ],

@@ -12,7 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class AuthProvider extends ChangeNotifier {
-  String signUpImage = selectedImage;
+  String signUpImage = defaultImage;
 
   Future<void> signIn(
       String userName, String passWord, BuildContext context) async {
@@ -96,7 +96,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   resetImage() async {
-    signUpImage = selectedImage;
+    signUpImage = defaultImage;
     notifyListeners();
   }
 }
