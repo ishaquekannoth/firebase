@@ -10,15 +10,19 @@ import 'package:provider/provider.dart';
 class UpdateScreen extends StatelessWidget {
   UpdateScreen({Key? key}) : super(key: key);
   final user = FirebaseAuth.instance.currentUser;
-  final nameController = TextEditingController(text: 'Name');
-  final lastNameController = TextEditingController(text: 'Last name');
-  final professionController = TextEditingController(text: 'Profession');
+
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
       body: StreamBuilder(
           stream: Provider.of<UpdateProvider>(context).userDataStream(user!),
           builder: (context, AsyncSnapshot<UserModel> snapshot) {
+            final nameController =
+                TextEditingController(text: snapshot.data!.name);
+            final lastNameController =
+                TextEditingController(text: snapshot.data!.lastName);
+            final professionController =
+                TextEditingController(text: snapshot.data!.profession);
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
@@ -30,10 +34,17 @@ class UpdateScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                        radius: 35,
-                        backgroundImage: MemoryImage(const Base64Decoder()
-                            .convert(snapshot.data!.image!))),
+                    GestureDetector(
+                      onTap: () async => await context
+                          .read<UpdateProvider>()
+                          .pickimage(snapshot.data!.email),
+                      child: Consumer<UpdateProvider>(
+                        builder: (context, value, child) => CircleAvatar(
+                            radius: 35,
+                            backgroundImage: MemoryImage(const Base64Decoder()
+                                .convert(snapshot.data!.image!))),
+                      ),
+                    ),
                     TextFormField(
                       controller: nameController,
                       decoration: InputDecoration(
@@ -91,7 +102,9 @@ class UpdateScreen extends StatelessWidget {
                                   lastName: lastNameController.text,
                                   name: nameController.text,
                                   profession: professionController.text,
-                                  image: snapshot.data!.image);
+                                  image: context
+                                      .read<UpdateProvider>()
+                                      .signedUpImage);
                               Provider.of<UpdateProvider>(context,
                                       listen: false)
                                   .update(context, data)
